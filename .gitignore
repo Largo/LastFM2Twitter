@@ -1,0 +1,11 @@
+cache
+logs
+dist
+bower_modules
+node_modules
+composer_modules
+composer.lock
+composer.phar
+app/config/config.env.php
+app/config/config.production.php
+app/config/config.development.php
