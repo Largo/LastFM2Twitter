@@ -73,5 +73,5 @@
     }
 
     $user->lastTwitterName = $newTwitterName;
-    User::save();
+    $user->save();
   }
