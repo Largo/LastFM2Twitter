@@ -6,7 +6,7 @@ $app->configureMode('production', function () use ($app) {
         'debug' => false,
         'cache' => true,
         'hosturl' => 'http://mydomain.com',
-        'absolutePath' => '/lastfmtwitter', // if this is not running in a subdomain write /
+        'absolutePath' => '/lastfmtwitter/', // if this is not running in a subdomain write /
         'twitter_consumer_key' => "",
         'twitter_consumer_secret' => "",
         'lastfm_apikey' => ""

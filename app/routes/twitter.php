@@ -84,7 +84,7 @@ $app->get('/login/twitter', function() use ($app) {
 
         //Disconnect the adapter
         $adapter->disconnect();
-        $app->redirect('/setup');
+        $app->redirect($app->config('absolutePath') . 'setup');
   }
   catch(\Exception $e){
       echo 'Oops, we ran into an issue! ' . $e->getMessage();
