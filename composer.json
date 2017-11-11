@@ -1,0 +1,22 @@
+{
+	"config": {
+		"vendor-dir":"composer_modules",
+		"bin-dir":"composer_modules/bin"
+	},
+	"repositories": [
+		{
+				"url": "https://github.com/Largo/Slim-Views",
+				"type": "vcs"
+		}
+	],
+	"require": {
+		"slim/slim": "2.*",
+		"slim/views": "dev-master",
+		"twig/twig": "1.*",
+		"twig/extensions": "*",
+		"j4mie/idiorm" : "1.5.3",
+		"j4mie/paris" : "1.5.6",
+		"hybridauth/hybridauth" : "3.0.x-dev",
+		"j7mbo/twitter-api-php": "^1.0"
+	}
+}

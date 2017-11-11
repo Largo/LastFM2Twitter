@@ -1,0 +1,17 @@
+Last.fm Last played song to twitter
+
+
+1. Create a mysql database called lastfmtwitter
+2. Import the sql under app/db into the database
+3. Create a twitter app under https://apps.twitter.com/
+  a. Set the Callback url according to this example: https://YOURDOMAIN.com/lastfmtwitter/login/twitter
+  b. [x] allow this application to be used to Sign in with Twitter
+  c. Permissions: Set request e-mail address from users. (My login class uses an e-mail adress as ID, otherwise we don't need it.)
+  d. Access: read & write
+  e. Note the values forConsumer Key (API Key) and Consumer Secret (API Secret)
+4. create a lastfm app
+5. copy app/config.production_example.php to app/config/config.production.php
+   and change the values according to the comments.
+6. install composer and run composer update
+7. upload to a server
+8. set up a cronjob to run cronjobRunner.php every 2 minutes, or use cronjob.de

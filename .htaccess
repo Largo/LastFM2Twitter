@@ -1,0 +1,70 @@
+RewriteEngine On
+
+# Some hosts may require you to use the `RewriteBase` directive.
+# If you need to use the `RewriteBase` directive, it should be the
+# absolute physical path to the directory that contains this htaccess file.
+#
+# Set the default handler.
+DirectoryIndex index.php index.html index.htm
+
+# Prevent directory listing
+Options -Indexes
+
+# Important block all those filetypes... definitely don't serve the xml of the csconnector
+<FilesMatch "\.(dist|db|markdown|md|twig|yaml|yml|cache|txt|log|xml|sql)|(bower|composer|jsdoc|package)\.json$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# Allow robots.txt
+<FilesMatch "robots\.txt$">
+  <IfModule mod_authz_core.c>
+    Require all granted
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order deny,allow
+    Allow from all
+  </IfModule>
+</FilesMatch>
+
+# Forbidding a few folders
+RewriteRule db/ - [F]
+RewriteRule .git/ - [F]
+RewriteRule logs/ - [F]
+RewriteRule composer_modules/ - [F]
+RewriteRule app/ - [F]
+RewriteRule docs/ - [F]
+
+#RewriteCond %{REQUEST_URI} /
+#RewriteRule ^ index.php [QSA,L]
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteRule ^ index.php [QSA,L]
+
+# If requested resource exists as a file or directory, skip next three rules
+#RewriteCond %{DOCUMENT_ROOT}/$1 -f [OR]
+#RewriteCond %{DOCUMENT_ROOT}/$1 -d
+#RewriteRule (.*) - [S=3]
+#
+
+# Else rewrite requests for non-existent resources to /index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !=/favicon.ico
+RewriteRule ^ index.php [QSA,L]
+
+
+# Block access to all hidden files and directories. These types of files
+# usually contain user preferences and can include private information like,
+# for example, the `.git` or `.svn` directories.
+<IfModule mod_rewrite.c>
+   RewriteEngine On
+   RewriteCond %{REQUEST_URI} "!(^|/)\.well-known/([^./]+./?)+$" [NC]
+   RewriteCond %{SCRIPT_FILENAME} -d [OR]
+   RewriteCond %{SCRIPT_FILENAME} -f
+   RewriteRule "(^|/)\." - [F]
+</IfModule>

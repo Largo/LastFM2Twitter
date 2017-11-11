@@ -1,0 +1,26 @@
+* {
+  font-family: Arial, sans-serif;
+}
+
+body {
+  font-size: 2em;
+}
+
+html {
+  background-color: white;
+}
+
+.content {
+  width: 40%;
+  padding: 3rem;
+  margin: 0 auto;
+}
+
+form{
+  margin-top: 4rem;
+}
+form * {
+  display: block;
+  margin: 2rem 0 ;
+  font-size: 2rem;
+}

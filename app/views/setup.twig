@@ -1,0 +1,16 @@
+{% extends 'template.twig' %}
+
+{% block content %}
+<h1>Set up Settings</h1>
+{% if wasSaved %}
+  <div>We saved your entry. Thanks, now just wait to see it happen. <br>
+  If you want to stop this effect from happening. Please go to <a href="https://twitter.com/settings/applications">https://twitter.com/settings/applications</a> <br>
+and remove this application from your account.</div>
+{% endif %}
+<form method="POST">
+  <input type="text" name="lastfmname" value="{{ setting.lastfmname }}" placeholder="Last FM Username">
+  <input type="text" name="twittertext" value="{{ setting.twittertext }}" placeholder="Text before the songinformation">
+  <input type="submit" name="" value="Save">
+</form>
+
+{% endblock %}
