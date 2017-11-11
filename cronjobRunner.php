@@ -34,13 +34,15 @@
         $artist = $artistData->{'#text'};
         $track = $track->name;
 
-        return "$artist — $track";
+        return array($artist, $track);
   }
 
   $settingsItems = Settings::find_many();
   if(count($settingsItems) > 9000) {
     die('too many people!!!');
   }
+
+  $twig = new \Twig_Environment(new \Twig_Loader_String());
 
   foreach ($settingsItems as $key => $setting) {
     sleep(0.01); // safety net so we never hit the twitter api to hard.
@@ -57,9 +59,13 @@
     $url = 'https://api.twitter.com/1.1/account/update_profile.json';
     $requestMethod = 'POST';
 
-    $songname = getLastPlayedSong($settings["lastfm_username"], $settings["lastfm_apikey"]);
-
-    $newTwitterName = $setting->twittertext . ' ' . $songname;
+    list($artist, $track) = getLastPlayedSong($settings["lastfm_username"], $settings["lastfm_apikey"]);
+    $template = $setting->twittertext;
+    $templateParameters = array(
+      'artist' => $artist,
+      'track' => $track,
+    );
+    $newTwitterName = $twig->render($template, $templateParameters);
 
     if($user->lastTwitterName != $newTwitterName) {
 

@@ -10,8 +10,11 @@ and remove this application from your account.</div>
 <form method="POST">
   <label for="lastfmname">Last.fm Username</label>
   <input type="text" id="lastfmname" ="lastfmname" value="{{ setting.lastfmname }}" placeholder="Last FM Username">
-  <label for="twittertext">The first part of the username when playing music</label>
-  <input type="text" id="twittertext"  name="twittertext" value="{{ setting.twittertext }}" placeholder="Text before the songinformation">
+  <label for="twittertext">
+    The template to use for your twitter name.<br>
+    Ex: <span class="code">"Doug 🎵 {{'{{'}}artist{{'}}'}} - {{'{{'}}track{{'}}'}}"</span>
+  </label>
+  <input type="text" id="twittertext"  name="twittertext" value="{{ setting.twittertext }}" placeholder="Twitter Name Template">
 
 
   {#<input type="checkbox" name="goBackToDefault" value="goBackToDefault"> If 30 minutes have passed after changing username go back to default Twittername<br>
