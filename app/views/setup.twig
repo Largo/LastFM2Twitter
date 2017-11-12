@@ -9,7 +9,7 @@ and remove this application from your account.</div>
 {% endif %}
 <form method="POST">
   <label for="lastfmname">Last.fm Username</label>
-  <input type="text" id="lastfmname" ="lastfmname" value="{{ setting.lastfmname }}" placeholder="Last FM Username">
+  <input type="text" id="lastfmname" name="lastfmname" value="{{ setting.lastfmname }}" placeholder="Last FM Username">
   <label for="twittertext">
     The template to use for your twitter name.<br>
     Ex: <span class="code">"Doug 🎵 {{'{{'}}artist{{'}}'}} - {{'{{'}}track{{'}}'}}"</span>
