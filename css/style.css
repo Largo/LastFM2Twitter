@@ -24,3 +24,11 @@ form * {
   margin: 2rem 0 ;
   font-size: 2rem;
 }
+form input[type="text"] {
+  width: 100%;
+}
+form span.code {
+  display: inline;
+  font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+  font-size: 1.5rem;
+}
