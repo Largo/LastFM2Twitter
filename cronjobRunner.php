@@ -1,18 +1,18 @@
 <?php
   require 'composer_modules/autoload.php';
   $app = new \Slim\Slim([
-  	'mode' => 'production',
-  	'view' => new \Slim\Views\Twig(),
-  	'templates.path' => 'app/views',
+    'mode' => 'production',
+    'view' => new \Slim\Views\Twig(),
+    'templates.path' => 'app/views',
   ]);
   require 'app/config/config.production.php';
 
   foreach (glob("app/models/*.php") as $filename) {
-  	require $filename;
+    require $filename;
   }
 
   foreach (glob("app/routes/*.php") as $filename) {
-  	require $filename;
+    require $filename;
   }
 
   function getLastPlayedSong($username, $apiKey) {
@@ -45,6 +45,7 @@
   $twig = new \Twig_Environment(new \Twig_Loader_String());
 
   foreach ($settingsItems as $key => $setting) {
+    try {
     sleep(0.01); // safety net so we never hit the twitter api to hard.
     $user = $setting->getUser();
     $settings = array(
@@ -65,7 +66,9 @@
       'artist' => $artist,
       'track' => $track,
     );
-    $newTwitterName = $twig->render($template, $templateParameters);
+
+    $twigTemplate = $twig->createTemplate($template);
+    $newTwitterName = $twigTemplate->render($templateParameters);
 
     if($user->lastTwitterName != $newTwitterName) {
 
@@ -80,4 +83,7 @@
 
     $user->lastTwitterName = $newTwitterName;
     $user->save();
+    } catch (Exception $e) {
+      echo "Error with " . $setting->lastfmname;
+    }
   }

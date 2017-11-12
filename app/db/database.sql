@@ -52,3 +52,5 @@ CREATE TABLE IF NOT EXISTS `user` (
   `lastTwitterName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=12 ;
+
+ALTER TABLE `settings` CHANGE `twittertext` `twittertext` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL;

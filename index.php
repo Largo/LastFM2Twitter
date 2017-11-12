@@ -1,50 +1,89 @@
 <?php
+  require 'composer_modules/autoload.php';
+  $app = new \Slim\Slim([
+    'mode' => 'production',
+    'view' => new \Slim\Views\Twig(),
+    'templates.path' => 'app/views',
+  ]);
+  require 'app/config/config.production.php';
 
-require 'composer_modules/autoload.php';
+  foreach (glob("app/models/*.php") as $filename) {
+    require $filename;
+  }
 
-$app = new \Slim\Slim([
-	'mode' => 'production',
-	'view' => new \Slim\Views\Twig(),
-	'templates.path' => 'app/views',
-]);
-header('Content-Type: text/html; charset=utf-8');
-ini_set("default_charset", "UTF-8");
-mb_internal_encoding("UTF-8");
+  foreach (glob("app/routes/*.php") as $filename) {
+    require $filename;
+  }
 
-require 'app/config/config.production.php';
+  function getLastPlayedSong($username, $apiKey) {
+        $url = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=" . $username .
+        "&api_key=" . $apiKey ."&format=json";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $rawData = curl_exec($ch);
+        curl_close($ch);
+        if(!$rawData){
+            return "";
+        }
+        $data = json_decode($rawData);
+        $recenttracks = $data->recenttracks;
 
-foreach (glob("app/models/*.php") as $filename) {
-	require $filename;
-}
+        $track = $recenttracks->track[0];
+        $artistData = $track->artist;
+        $artist = $artistData->{'#text'};
+        $track = $track->name;
 
-foreach (glob("app/routes/*.php") as $filename) {
-	require $filename;
-}
+        return array($artist, $track);
+  }
 
-if(!isset($_SESSION)){
-  session_start();
-}
+  $settingsItems = Settings::find_many();
+  if(count($settingsItems) > 9000) {
+    die('too many people!!!');
+  }
 
-$view = $app->view;
+  $twig = new \Twig_Environment(new \Twig_Loader_String());
 
-$view->parserOptions = array (
-	'charset' => 'utf-8',
-	'cache' => $app->config('cache'),
-	'auto_reload' => true,
-	'strict_variables' => false,
-	'autoescape' => true
-);
+  foreach ($settingsItems as $key => $setting) {
+    try {
+    sleep(0.01); // safety net so we never hit the twitter api to hard.
+    $user = $setting->getUser();
+    $settings = array(
+        'oauth_access_token' => $user->oauth_access_token,
+        'oauth_access_token_secret' => $user->oauth_access_token_secret,
+        'consumer_key' => $app->config('twitter_consumer_key'),
+        'consumer_secret' => $app->config('twitter_consumer_secret'),
+        'lastfm_username' => $setting->lastfmname,
+        'lastfm_apikey' => $app->config('lastfm_apikey')
+    );
 
-$view->parserExtensions = array(
-    new \Slim\Views\TwigExtension(),
-);
+    $url = 'https://api.twitter.com/1.1/account/update_profile.json';
+    $requestMethod = 'POST';
 
-$app->view->appendData([
-  'absolutePath' => $app->config('absolutePath'),
-]);
+    list($artist, $track) = getLastPlayedSong($settings["lastfm_username"], $settings["lastfm_apikey"]);
+    $template = $setting->twittertext;
+    $templateParameters = array(
+      'artist' => $artist,
+      'track' => $track,
+    );
 
-$app->get('/', function() use ($app) {
-  $app->render('/index.twig');
-});
+    $twigTemplate = $twig->createTemplate($template);
+    $newTwitterName = $twigTemplate->render($templateParameters);
 
-$app->run();
+    if($user->lastTwitterName != $newTwitterName) {
+
+      $postfields = array(
+        'name' => $newTwitterName, // 50
+      );
+      $twitter = new TwitterAPIExchange($settings);
+      $twitter->buildOauth($url, $requestMethod)
+        ->setPostfields($postfields)
+        ->performRequest();
+    }
+
+    $user->lastTwitterName = $newTwitterName;
+    $user->save();
+    } catch (Exception $e) {
+      echo "Error with " . $setting->lastfmname;
+    }
+  }
