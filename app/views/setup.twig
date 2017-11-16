@@ -16,9 +16,12 @@ and remove this application from your account.</div>
   </label>
   <input type="text" id="twittertext"  name="twittertext" value="{{ setting.twittertext }}" placeholder="Twitter Name Template">
 
+  <input type="text" id="defaultTwittername" name="defaultTwittername" value="{{ setting.defaultTwittername }}" placeholder="Twittername when not playing music, leave empty if you always want to show the name with music">
+  <input type="text" id="timeDifferenceInSeconds" name="timeDifferenceInSeconds" value="{{ setting.timeDifferenceInSeconds }}" placeholder="Time in seconds until when your twittername should go back to normal">
+
 
   {#<input type="checkbox" name="goBackToDefault" value="goBackToDefault"> If 30 minutes have passed after changing username go back to default Twittername<br>
-  <label for="default">The first part of the username when NOT playing music</label>
+  <label for="default">The username when NOT playing music</label>
   <input type="text" id="defaulttwittertext"  name="defaulttwittertext" value="{{ setting.twittertext }}" placeholder="Text before the songinformation"> #}
 
 

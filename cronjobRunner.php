@@ -30,11 +30,12 @@
         $recenttracks = $data->recenttracks;
 
         $track = $recenttracks->track[0];
+        $lastPlayedTimestamp = $track->date->uts; // utc timestamp
         $artistData = $track->artist;
         $artist = $artistData->{'#text'};
         $track = $track->name;
 
-        return array($artist, $track);
+        return array($artist, $track, $lastPlayedTimestamp);
   }
 
   $settingsItems = Settings::find_many();
@@ -60,18 +61,32 @@
     $url = 'https://api.twitter.com/1.1/account/update_profile.json';
     $requestMethod = 'POST';
 
-    list($artist, $track) = getLastPlayedSong($settings["lastfm_username"], $settings["lastfm_apikey"]);
+    list($artist, $track, $lastPlayedTimestamp) = getLastPlayedSong($settings["lastfm_username"], $settings["lastfm_apikey"]);
     $template = $setting->twittertext;
     $templateParameters = array(
       'artist' => $artist,
       'track' => $track,
     );
 
-    $twigTemplate = $twig->createTemplate($template);
-    $newTwitterName = $twigTemplate->render($templateParameters);
 
-    if($user->lastTwitterName != $newTwitterName) {
+    $date_utc = new \DateTime(null, new \DateTimeZone("UTC"));
+    $currentTimestamp = $date_utc->getTimestamp();
 
+
+    if(empty($setting->timeDifferenceInSeconds)) {
+      $timeDifferenceInSeconds = 600;
+    } else {
+      $timeDifferenceInSeconds = intval($setting->timeDifferenceInSeconds);
+    }
+
+    if(($currentTimestamp - $lastPlayedTimestamp) <= $timeDifferenceInSeconds) { // how long should the name be changed?
+      $twigTemplate = $twig->createTemplate($template);
+      $newTwitterName = $twigTemplate->render($templateParameters);
+    } else {
+      $newTwitterName = $setting->defaultTwittername;
+    }
+
+    if(($user->lastTwitterName != $newTwitterName) && !empty($newTwitterName)) {
       $postfields = array(
         'name' => $newTwitterName, // 50
       );
