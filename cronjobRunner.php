@@ -30,7 +30,12 @@
         $recenttracks = $data->recenttracks;
 
         $track = $recenttracks->track[0];
-        $lastPlayedTimestamp = $track->date->uts; // utc timestamp
+        if(isset($track->{'@attr'}->nowplaying) && $track->{'@attr'}->nowplaying == "true") {
+          $date_utc = new \DateTime(null, new \DateTimeZone("UTC"));
+          $lastPlayedTimestamp = $date_utc->getTimestamp();
+        } else {
+          $lastPlayedTimestamp = $track->date->uts; // utc timestamp
+        }
         $artistData = $track->artist;
         $artist = $artistData->{'#text'};
         $track = $track->name;
@@ -71,7 +76,6 @@
 
     $date_utc = new \DateTime(null, new \DateTimeZone("UTC"));
     $currentTimestamp = $date_utc->getTimestamp();
-
 
     if(empty($setting->timeDifferenceInSeconds)) {
       $timeDifferenceInSeconds = 600;
